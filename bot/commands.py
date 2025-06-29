@@ -47,16 +47,16 @@ async def setup_commands(bot):
                 ephemeral=True
             )
     
-    @bot.tree.command(name="addrole", description="Add a role to a user (Admin/Moderator only)")
+    @bot.tree.command(name="addrole", description="Add a role to a user (Owner only)")
     @app_commands.describe(
         member="The member to add the role to",
         role="The role to add"
     )
     async def add_role(interaction: discord.Interaction, member: discord.Member, role: discord.Role):
         """Add a role to a member"""
-        if not has_permission(interaction.user, PermissionLevel.MODERATOR):
+        if not has_permission(interaction.user, PermissionLevel.OWNER):
             await interaction.response.send_message(
-                "❌ You don't have permission to use this command.",
+                "❌ Only the bot owner can use this command.",
                 ephemeral=True
             )
             return
@@ -100,16 +100,16 @@ async def setup_commands(bot):
             except Exception as followup_error:
                 logger.error(f"Error sending error message: {followup_error}")
     
-    @bot.tree.command(name="removerole", description="Remove a role from a user (Admin/Moderator only)")
+    @bot.tree.command(name="removerole", description="Remove a role from a user (Owner only)")
     @app_commands.describe(
         member="The member to remove the role from",
         role="The role to remove"
     )
     async def remove_role(interaction: discord.Interaction, member: discord.Member, role: discord.Role):
         """Remove a role from a member"""
-        if not has_permission(interaction.user, PermissionLevel.MODERATOR):
+        if not has_permission(interaction.user, PermissionLevel.OWNER):
             await interaction.response.send_message(
-                "❌ You don't have permission to use this command.",
+                "❌ Only the bot owner can use this command.",
                 ephemeral=True
             )
             return
@@ -208,7 +208,7 @@ async def setup_commands(bot):
         
         embed.add_field(
             name="🔧 Commands",
-            value="• `/server` - Get private server link\n• `/serverstatus` - Check server status\n• `/addrole` - Add role to user\n• `/removerole` - Remove role from user\n• `/roleinfo` - View role information",
+            value="• `/server` - Get private server link\n• `/serverstatus` - Check server status\n• `/addrole` - Add role to user (Owner only)\n• `/removerole` - Remove role from user (Owner only)\n• `/roleinfo` - View role information",
             inline=False
         )
         

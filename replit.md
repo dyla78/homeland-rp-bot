@@ -121,6 +121,7 @@ Changelog:
 - June 29, 2025. Fixed multiple response spam and implemented clickable button in embed box
 - June 29, 2025. Added /serverstatus command showing player count and current RP scenarios
 - June 29, 2025. Fixed interaction errors in role management commands
+- June 29, 2025. Restricted role management commands to owner only (user ID: 1103464083002499102)
 ```
 
 ## User Preferences
