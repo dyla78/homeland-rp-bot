@@ -84,47 +84,76 @@ class ServerManager:
     
     async def get_server_status(self) -> dict:
         """
-        Get status of all configured servers with player count and RP information
+        Get status from manually configured server status file
         """
         try:
-            import random
-            import datetime
+            import json
+            import os
             
-            # Generate realistic player count (0-50 players)
-            player_count = random.randint(8, 47)
+            status_file = os.path.join("config", "server_status.json")
             
-            # Server is online if we have configured links
-            is_online = len(self.server_links) > 0
+            # Read from status file
+            if os.path.exists(status_file):
+                with open(status_file, 'r') as f:
+                    status = json.load(f)
+            else:
+                # Default status if file doesn't exist
+                status = {
+                    'online': True,
+                    'player_count': 0,
+                    'current_rp': "No active RP session",
+                    'last_updated': "Not set",
+                    'updated_by': "System"
+                }
             
-            # Generate current RP scenarios
-            rp_scenarios = [
-                "City-wide police chase in progress",
-                "Bank robbery at Downtown Financial",
-                "Medical emergency at Central Hospital",
-                "Traffic stop on Highway 1",
-                "Gang meeting at Industrial District",
-                "Court session at City Hall",
-                "Prison riot at State Penitentiary",
-                "Fire department responding to warehouse fire",
-                "Peaceful patrol around the city",
-                "Training session at Police Academy"
-            ]
-            
-            current_rp = random.choice(rp_scenarios) if is_online and player_count > 15 else "No active RP session"
-            
-            status = {
-                'online': is_online,
-                'player_count': player_count if is_online else 0,
-                'current_rp': current_rp,
-                'last_updated': datetime.datetime.now().isoformat(),
-                'server_name': "Homeland RP | Private Server"
-            }
+            # Add server name
+            status['server_name'] = "Homeland RP | Private Server"
             
             return status
             
         except Exception as e:
             logger.error(f"Error getting server status: {e}")
-            return {'error': 'Unable to retrieve server status'}
+            return {
+                'online': False,
+                'player_count': 0,
+                'current_rp': "Status unavailable",
+                'last_updated': "Error",
+                'updated_by': "System",
+                'server_name': "Homeland RP | Private Server"
+            }
+    
+    async def update_server_status(self, player_count: int, current_rp: str, updated_by: str) -> bool:
+        """
+        Update server status information (Owner/Admin only)
+        """
+        try:
+            import json
+            import os
+            import datetime
+            
+            status_file = os.path.join("config", "server_status.json")
+            
+            new_status = {
+                'online': True,
+                'player_count': player_count,
+                'current_rp': current_rp,
+                'last_updated': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'updated_by': updated_by
+            }
+            
+            # Create config directory if it doesn't exist
+            os.makedirs("config", exist_ok=True)
+            
+            # Write to status file
+            with open(status_file, 'w') as f:
+                json.dump(new_status, f, indent=2)
+            
+            logger.info(f"Server status updated by {updated_by}: {player_count} players, RP: {current_rp}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error updating server status: {e}")
+            return False
     
     def validate_roblox_link(self, link: str) -> bool:
         """

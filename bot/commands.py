@@ -208,7 +208,7 @@ async def setup_commands(bot):
         
         embed.add_field(
             name="🔧 Commands",
-            value="• `/server` - Get private server link\n• `/serverstatus` - Check server status\n• `/addrole` - Add role to user (Owner only)\n• `/removerole` - Remove role from user (Owner only)\n• `/roleinfo` - View role information",
+            value="• `/server` - Get private server link\n• `/serverstatus` - Check server status\n• `/updatestatus` - Update server info (Owner/Admin only)\n• `/addrole` - Add role to user (Owner only)\n• `/removerole` - Remove role from user (Owner only)\n• `/roleinfo` - View role information",
             inline=False
         )
         
@@ -225,8 +225,6 @@ async def setup_commands(bot):
     async def server_status(interaction: discord.Interaction):
         """Display server status information"""
         try:
-            await interaction.response.defer()
-            
             # Get server status from server manager
             status_info = await server_manager.get_server_status()
             
@@ -259,25 +257,101 @@ async def setup_commands(bot):
                 inline=False
             )
             
-            # Last updated
-            import datetime
-            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
-            embed.set_footer(text=f"Last updated: {timestamp} • Homeland RP | Official Bot")
+            # Last updated and updated by
+            last_updated = status_info.get('last_updated', 'Not set')
+            updated_by = status_info.get('updated_by', 'System')
+            embed.set_footer(text=f"Last updated: {last_updated} by {updated_by} • Homeland RP | Official Bot")
             
-            await interaction.followup.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             logger.info(f"Server status requested by {interaction.user}")
             
         except Exception as e:
             logger.error(f"Error getting server status: {e}")
             try:
-                embed = discord.Embed(
-                    title="❌ Server Status Error",
-                    description="Unable to retrieve server status at this time. Please try again later.",
-                    color=discord.Color.red()
-                )
-                embed.set_footer(text="Homeland RP | Official Bot")
-                await interaction.followup.send(embed=embed)
+                if not interaction.response.is_done():
+                    embed = discord.Embed(
+                        title="❌ Server Status Error",
+                        description="Unable to retrieve server status at this time. Please try again later.",
+                        color=discord.Color.red()
+                    )
+                    embed.set_footer(text="Homeland RP | Official Bot")
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
             except Exception as followup_error:
                 logger.error(f"Error sending server status error message: {followup_error}")
+    
+    @bot.tree.command(name="updatestatus", description="Update server player count and current RP (Owner/Admin only)")
+    @app_commands.describe(
+        player_count="Number of players currently online (0-50)",
+        current_rp="Current roleplay scenario happening on the server"
+    )
+    async def update_status(interaction: discord.Interaction, player_count: int, current_rp: str):
+        """Update server status information"""
+        try:
+            # Check permissions - Owner or Admin only
+            if not has_permission(interaction.user, PermissionLevel.ADMIN):
+                await interaction.response.send_message(
+                    "❌ Only the owner or administrators can update server status.",
+                    ephemeral=True
+                )
+                return
+            
+            # Validate player count
+            if player_count < 0 or player_count > 50:
+                await interaction.response.send_message(
+                    "❌ Player count must be between 0 and 50.",
+                    ephemeral=True
+                )
+                return
+            
+            # Validate RP description length
+            if len(current_rp) > 200:
+                await interaction.response.send_message(
+                    "❌ Current RP description must be 200 characters or less.",
+                    ephemeral=True
+                )
+                return
+            
+            # Update server status
+            success = await server_manager.update_server_status(
+                player_count, 
+                current_rp, 
+                str(interaction.user)
+            )
+            
+            if success:
+                embed = discord.Embed(
+                    title="✅ Server Status Updated",
+                    description="Server information has been updated successfully!",
+                    color=discord.Color.green()
+                )
+                embed.add_field(
+                    name="👥 Player Count",
+                    value=f"{player_count}/50",
+                    inline=True
+                )
+                embed.add_field(
+                    name="🎭 Current RP",
+                    value=current_rp,
+                    inline=False
+                )
+                embed.set_footer(text=f"Updated by {interaction.user} • Homeland RP | Official Bot")
+                await interaction.response.send_message(embed=embed)
+                logger.info(f"Server status updated by {interaction.user}: {player_count} players, RP: {current_rp}")
+            else:
+                await interaction.response.send_message(
+                    "❌ Failed to update server status. Please try again later.",
+                    ephemeral=True
+                )
+                
+        except Exception as e:
+            logger.error(f"Error updating server status: {e}")
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(
+                        "❌ An error occurred while updating server status.",
+                        ephemeral=True
+                    )
+            except Exception as followup_error:
+                logger.error(f"Error sending update status error message: {followup_error}")
     
     logger.info("All commands have been set up successfully")

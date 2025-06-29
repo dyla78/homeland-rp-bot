@@ -122,6 +122,8 @@ Changelog:
 - June 29, 2025. Added /serverstatus command showing player count and current RP scenarios
 - June 29, 2025. Fixed interaction errors in role management commands
 - June 29, 2025. Restricted role management commands to owner only (user ID: 1103464083002499102)
+- June 29, 2025. Fixed duplicate server status responses and added manual status control via /updatestatus
+- June 29, 2025. Implemented file-based status storage for admin team to control player count and RP info
 ```
 
 ## User Preferences
