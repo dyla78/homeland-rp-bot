@@ -24,6 +24,9 @@ class HomelandBot(commands.Bot):
             case_insensitive=True
         )
         
+        # Cooldown tracking for auto-responses
+        self.last_auto_response = {}
+        
     async def setup_hook(self):
         """Called when the bot is starting up"""
         logger.info("Setting up bot commands...")
@@ -60,18 +63,40 @@ class HomelandBot(commands.Bot):
         
         # Check if message contains "code" (case insensitive)
         if "code" in message.content.lower():
+            # Check cooldown (30 seconds per channel)
+            import time
+            current_time = time.time()
+            channel_id = message.channel.id
+            
+            if channel_id in self.last_auto_response:
+                if current_time - self.last_auto_response[channel_id] < 30:
+                    return  # Skip if within cooldown
+            
             try:
                 from bot.server_manager import ServerManager
                 server_manager = ServerManager()
                 server_link = await server_manager.get_server_link()
                 
-                # Send simple response with server link
-                await message.channel.send(f"Server code: {server_link}")
-                logger.info(f"Auto-sent server link to {message.author} in response to 'code' keyword")
+                # Create button view
+                view = discord.ui.View(timeout=300)  # 5 minute timeout
+                button = discord.ui.Button(
+                    label="Join Server",
+                    style=discord.ButtonStyle.primary,
+                    url=server_link,
+                    emoji="🎮"
+                )
+                view.add_item(button)
+                
+                # Send message with button
+                await message.channel.send("🎮 **Homeland RP Server**", view=view)
+                
+                # Update cooldown
+                self.last_auto_response[channel_id] = current_time
+                logger.info(f"Auto-sent server button to {message.author} in response to 'code' keyword")
                 
             except Exception as e:
                 logger.error(f"Error auto-sending server link: {e}")
-                await message.channel.send("Server code not available right now.")
+                await message.channel.send("Server not available right now.")
         
         # Process commands normally
         await self.process_commands(message)
