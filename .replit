@@ -4,7 +4,6 @@ modules = ["python-3.11"]
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -22,3 +21,7 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pip install discord.py && python main.py"
+
+[[ports]]
+localPort = 8080
+externalPort = 80

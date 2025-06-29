@@ -1,3 +1,4 @@
+from keep_alive import keep_alive
 import discord
 from discord.ext import commands
 import asyncio
@@ -16,75 +17,57 @@ class HomelandBot(commands.Bot):
         intents.message_content = True
         intents.guilds = True
         intents.members = True
-        
+
         super().__init__(
             command_prefix='!',
             intents=intents,
             help_command=None,
             case_insensitive=True
         )
-        
-        # Cooldown tracking for auto-responses
+
         self.last_auto_response = {}
-        
+
     async def setup_hook(self):
-        """Called when the bot is starting up"""
         logger.info("Setting up bot commands...")
         await setup_commands(self)
-        
-        # Sync slash commands
         try:
             synced = await self.tree.sync()
             logger.info(f"Synced {len(synced)} command(s)")
         except Exception as e:
             logger.error(f"Failed to sync commands: {e}")
-    
+
     async def on_ready(self):
-        """Called when the bot is ready"""
         logger.info(f'{self.user} has logged in successfully!')
         logger.info(f'Bot is connected to {len(self.guilds)} guild(s)')
-        
-        # Set bot activity
-        activity = discord.Activity(
-            type=discord.ActivityType.watching,
-            name="Homeland RP Server"
-        )
+        activity = discord.Activity(type=discord.ActivityType.watching, name="Homeland RP Server")
         await self.change_presence(activity=activity)
-        
-        # Log guild information
         for guild in self.guilds:
             logger.info(f'Connected to guild: {guild.name} (ID: {guild.id})')
-    
+
     async def on_message(self, message):
-        """Handle incoming messages"""
-        # Don't respond to bot messages
         if message.author.bot:
             return
-        
-        # Check if message contains "code" (case insensitive)
+
         if "code" in message.content.lower():
-            # Check cooldown (30 seconds per channel)
             import time
             current_time = time.time()
             channel_id = message.channel.id
-            
+
             if channel_id in self.last_auto_response:
                 if current_time - self.last_auto_response[channel_id] < 30:
-                    return  # Skip if within cooldown
-            
+                    return
+
             try:
                 from bot.server_manager import ServerManager
                 server_manager = ServerManager()
                 server_link = await server_manager.get_server_link()
-                
-                # Create embed with button
+
                 embed = discord.Embed(
                     title="🎮 Homeland RP Server",
                     description="Click the button below to join our private server!",
                     color=discord.Color.blue()
                 )
-                
-                # Create button view
+
                 view = discord.ui.View(timeout=300)
                 button = discord.ui.Button(
                     label="Join Server",
@@ -93,28 +76,21 @@ class HomelandBot(commands.Bot):
                     emoji="🎮"
                 )
                 view.add_item(button)
-                
-                # Send message with embed and button
+
                 await message.channel.send(embed=embed, view=view)
-                
-                # Update cooldown
                 self.last_auto_response[channel_id] = current_time
-                logger.info(f"Auto-sent server button to {message.author} in response to 'code' keyword")
-                
+                logger.info(f"Auto-sent server button to {message.author} in response to 'code'")
+
             except Exception as e:
                 logger.error(f"Error auto-sending server link: {e}")
                 await message.channel.send("Server not available right now.")
-        
-        # Process commands normally
+
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, error):
-        """Global error handler"""
         if isinstance(error, commands.CommandNotFound):
-            return  # Ignore unknown commands
-        
+            return
         logger.error(f"Command error in {ctx.command}: {error}")
-        
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("❌ You don't have permission to use this command.")
         elif isinstance(error, commands.BotMissingPermissions):
@@ -124,18 +100,16 @@ class HomelandBot(commands.Bot):
         else:
             await ctx.send("❌ An error occurred while processing your command.")
 
+# ✅ SOLO UNA FUNCIÓN main CON EL keep_alive ADENTRO
 async def main():
-    """Main function to run the bot"""
-    # Get bot token from environment variables
     token = os.getenv('DISCORD_BOT_TOKEN')
-    
     if not token:
         logger.error("DISCORD_BOT_TOKEN environment variable not found!")
         return
-    
-    # Create and run bot
+
+    keep_alive()  # ✅ Esto mantiene vivo el bot en Replit
+
     bot = HomelandBot()
-    
     try:
         await bot.start(token)
     except KeyboardInterrupt:
@@ -145,5 +119,6 @@ async def main():
     finally:
         await bot.close()
 
+# Ejecutar el bot
 if __name__ == "__main__":
     asyncio.run(main())
