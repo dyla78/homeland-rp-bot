@@ -2,8 +2,7 @@
     "bot_name": "Homeland RP | Official Bot",
     "command_prefix": "!",
     "roblox_servers": [
-        "https://www.roblox.com/games/1234567890/Homeland-RP?privateServerLinkCode=REPLACE_WITH_ACTUAL_LINK_1",
-        "https://www.roblox.com/games/1234567890/Homeland-RP?privateServerLinkCode=REPLACE_WITH_ACTUAL_LINK_2"
+        "https://www.roblox.com/games/start?placeId=7711635737&launchData=joinCode%3D57qf9rnx"
     ],
     "admin_roles": [
         "Admin",
