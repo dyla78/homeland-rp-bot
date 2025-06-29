@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a Discord bot designed for the Homeland RP Roblox server community. The bot provides essential server management features including role management, server link distribution, and permission-based command access. Built with Python using the discord.py library, it follows a modular architecture with clear separation of concerns across different components.
+This is a Discord bot designed for the Homeland RP Roblox server community. The bot provides essential server management features including role management, automatic server link distribution via clickable buttons, and permission-based command access. Built with Python using the discord.py library, it follows a modular architecture with clear separation of concerns across different components.
+
+**Current Status**: Fully operational with automatic "code" keyword detection that displays clickable embed buttons for Roblox server access.
 
 ## System Architecture
 
@@ -116,6 +118,7 @@ Changelog:
 - June 29, 2025. Initial setup
 - June 29, 2025. Added automatic server link sharing when "code" keyword is detected in messages
 - June 29, 2025. Updated with real Roblox server link and user owner ID configuration
+- June 29, 2025. Fixed multiple response spam and implemented clickable button in embed box
 ```
 
 ## User Preferences

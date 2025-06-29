@@ -77,18 +77,25 @@ class HomelandBot(commands.Bot):
                 server_manager = ServerManager()
                 server_link = await server_manager.get_server_link()
                 
+                # Create embed with button
+                embed = discord.Embed(
+                    title="🎮 Homeland RP Server",
+                    description="Click the button below to join our private server!",
+                    color=discord.Color.blue()
+                )
+                
                 # Create button view
-                view = discord.ui.View(timeout=300)  # 5 minute timeout
+                view = discord.ui.View(timeout=300)
                 button = discord.ui.Button(
                     label="Join Server",
-                    style=discord.ButtonStyle.primary,
+                    style=discord.ButtonStyle.link,
                     url=server_link,
                     emoji="🎮"
                 )
                 view.add_item(button)
                 
-                # Send message with button
-                await message.channel.send("🎮 **Homeland RP Server**", view=view)
+                # Send message with embed and button
+                await message.channel.send(embed=embed, view=view)
                 
                 # Update cooldown
                 self.last_auto_response[channel_id] = current_time
