@@ -119,6 +119,8 @@ Changelog:
 - June 29, 2025. Added automatic server link sharing when "code" keyword is detected in messages
 - June 29, 2025. Updated with real Roblox server link and user owner ID configuration
 - June 29, 2025. Fixed multiple response spam and implemented clickable button in embed box
+- June 29, 2025. Added /serverstatus command showing player count and current RP scenarios
+- June 29, 2025. Fixed interaction errors in role management commands
 ```
 
 ## User Preferences

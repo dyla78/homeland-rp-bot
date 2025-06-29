@@ -62,6 +62,14 @@ async def setup_commands(bot):
             return
         
         try:
+            # Ensure we have a guild member context
+            if not isinstance(interaction.user, discord.Member):
+                await interaction.response.send_message(
+                    "❌ This command can only be used in a server.",
+                    ephemeral=True
+                )
+                return
+            
             success, message = await role_manager.add_role(member, role, interaction.user)
             
             if success:
@@ -78,10 +86,19 @@ async def setup_commands(bot):
                 
         except Exception as e:
             logger.error(f"Error adding role: {e}")
-            await interaction.response.send_message(
-                "❌ An error occurred while adding the role.",
-                ephemeral=True
-            )
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(
+                        "❌ An error occurred while adding the role.",
+                        ephemeral=True
+                    )
+                else:
+                    await interaction.followup.send(
+                        "❌ An error occurred while adding the role.",
+                        ephemeral=True
+                    )
+            except Exception as followup_error:
+                logger.error(f"Error sending error message: {followup_error}")
     
     @bot.tree.command(name="removerole", description="Remove a role from a user (Admin/Moderator only)")
     @app_commands.describe(
@@ -98,6 +115,14 @@ async def setup_commands(bot):
             return
         
         try:
+            # Ensure we have a guild member context
+            if not isinstance(interaction.user, discord.Member):
+                await interaction.response.send_message(
+                    "❌ This command can only be used in a server.",
+                    ephemeral=True
+                )
+                return
+            
             success, message = await role_manager.remove_role(member, role, interaction.user)
             
             if success:
@@ -114,15 +139,31 @@ async def setup_commands(bot):
                 
         except Exception as e:
             logger.error(f"Error removing role: {e}")
-            await interaction.response.send_message(
-                "❌ An error occurred while removing the role.",
-                ephemeral=True
-            )
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(
+                        "❌ An error occurred while removing the role.",
+                        ephemeral=True
+                    )
+                else:
+                    await interaction.followup.send(
+                        "❌ An error occurred while removing the role.",
+                        ephemeral=True
+                    )
+            except Exception as followup_error:
+                logger.error(f"Error sending error message: {followup_error}")
     
     @bot.tree.command(name="roleinfo", description="Get information about server roles")
     async def role_info(interaction: discord.Interaction):
         """Display information about available roles"""
         try:
+            if not interaction.guild:
+                await interaction.response.send_message(
+                    "❌ This command can only be used in a server.",
+                    ephemeral=True
+                )
+                return
+            
             roles_info = await role_manager.get_roles_info(interaction.guild)
             
             embed = discord.Embed(
@@ -167,7 +208,7 @@ async def setup_commands(bot):
         
         embed.add_field(
             name="🔧 Commands",
-            value="• `/server` - Get private server link\n• `/addrole` - Add role to user\n• `/removerole` - Remove role from user\n• `/roleinfo` - View role information",
+            value="• `/server` - Get private server link\n• `/serverstatus` - Check server status\n• `/addrole` - Add role to user\n• `/removerole` - Remove role from user\n• `/roleinfo` - View role information",
             inline=False
         )
         
@@ -179,5 +220,64 @@ async def setup_commands(bot):
         
         embed.set_footer(text="Homeland RP | Official Bot • Made for the community")
         await interaction.response.send_message(embed=embed)
+    
+    @bot.tree.command(name="serverstatus", description="Check Roblox server status and player count")
+    async def server_status(interaction: discord.Interaction):
+        """Display server status information"""
+        try:
+            await interaction.response.defer()
+            
+            # Get server status from server manager
+            status_info = await server_manager.get_server_status()
+            
+            embed = discord.Embed(
+                title="🎮 Homeland RP Server Status",
+                color=discord.Color.green() if status_info.get('online', False) else discord.Color.red()
+            )
+            
+            # Server status
+            status_emoji = "🟢" if status_info.get('online', False) else "🔴"
+            embed.add_field(
+                name=f"{status_emoji} Server Status",
+                value="Online" if status_info.get('online', False) else "Offline",
+                inline=True
+            )
+            
+            # Player count
+            player_count = status_info.get('player_count', 'Unknown')
+            embed.add_field(
+                name="👥 Players Count",
+                value=f"{player_count}/50" if isinstance(player_count, int) else str(player_count),
+                inline=True
+            )
+            
+            # Current RP scenario
+            current_rp = status_info.get('current_rp', 'No active RP session')
+            embed.add_field(
+                name="🎭 Current RP",
+                value=current_rp,
+                inline=False
+            )
+            
+            # Last updated
+            import datetime
+            timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+            embed.set_footer(text=f"Last updated: {timestamp} • Homeland RP | Official Bot")
+            
+            await interaction.followup.send(embed=embed)
+            logger.info(f"Server status requested by {interaction.user}")
+            
+        except Exception as e:
+            logger.error(f"Error getting server status: {e}")
+            try:
+                embed = discord.Embed(
+                    title="❌ Server Status Error",
+                    description="Unable to retrieve server status at this time. Please try again later.",
+                    color=discord.Color.red()
+                )
+                embed.set_footer(text="Homeland RP | Official Bot")
+                await interaction.followup.send(embed=embed)
+            except Exception as followup_error:
+                logger.error(f"Error sending server status error message: {followup_error}")
     
     logger.info("All commands have been set up successfully")
