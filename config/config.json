@@ -1,0 +1,97 @@
+{
+    "bot_name": "Homeland RP | Official Bot",
+    "command_prefix": "!",
+    "roblox_servers": [
+        "https://www.roblox.com/games/1234567890/Homeland-RP?privateServerLinkCode=REPLACE_WITH_ACTUAL_LINK_1",
+        "https://www.roblox.com/games/1234567890/Homeland-RP?privateServerLinkCode=REPLACE_WITH_ACTUAL_LINK_2"
+    ],
+    "admin_roles": [
+        "Admin",
+        "Administrator",
+        "Owner",
+        "Server Owner",
+        "Homeland Admin"
+    ],
+    "moderator_roles": [
+        "Moderator",
+        "Mod",
+        "Staff",
+        "Helper",
+        "Homeland Staff"
+    ],
+    "protected_roles": [
+        "Admin",
+        "Administrator",
+        "Owner",
+        "Server Owner",
+        "Bot",
+        "Homeland RP | Official Bot",
+        "@everyone"
+    ],
+    "role_categories": {
+        "Staff Roles": [
+            "Admin",
+            "Administrator",
+            "Moderator",
+            "Helper",
+            "Staff",
+            "Homeland Admin",
+            "Homeland Staff"
+        ],
+        "RP Roles": [
+            "Police",
+            "Sheriff",
+            "State Trooper",
+            "Civilian",
+            "Criminal",
+            "Gang Member",
+            "EMS",
+            "Paramedic",
+            "Fire Department",
+            "Firefighter",
+            "Government",
+            "Mayor",
+            "Judge",
+            "Lawyer"
+        ],
+        "Special Roles": [
+            "VIP",
+            "Donator",
+            "Supporter",
+            "Nitro Booster",
+            "Verified",
+            "Veteran Player",
+            "Event Winner"
+        ],
+        "Department Roles": [
+            "Police Department",
+            "Sheriff Department",
+            "State Police",
+            "Fire Department",
+            "EMS Department",
+            "Government Department"
+        ]
+    },
+    "owner_ids": [
+    ],
+    "logging": {
+        "level": "INFO",
+        "file": "homeland_bot.log",
+        "max_size": 10485760,
+        "backup_count": 5,
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "date_format": "%Y-%m-%d %H:%M:%S"
+    },
+    "bot_settings": {
+        "activity_type": "watching",
+        "activity_name": "Homeland RP Server",
+        "status": "online",
+        "sync_commands_on_startup": true
+    },
+    "features": {
+        "role_management": true,
+        "server_links": true,
+        "logging": true,
+        "permissions": true
+    }
+}
