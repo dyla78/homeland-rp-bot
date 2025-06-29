@@ -52,6 +52,30 @@ class HomelandBot(commands.Bot):
         for guild in self.guilds:
             logger.info(f'Connected to guild: {guild.name} (ID: {guild.id})')
     
+    async def on_message(self, message):
+        """Handle incoming messages"""
+        # Don't respond to bot messages
+        if message.author.bot:
+            return
+        
+        # Check if message contains "code" (case insensitive)
+        if "code" in message.content.lower():
+            try:
+                from bot.server_manager import ServerManager
+                server_manager = ServerManager()
+                server_link = await server_manager.get_server_link()
+                
+                # Send simple response with server link
+                await message.channel.send(f"Server code: {server_link}")
+                logger.info(f"Auto-sent server link to {message.author} in response to 'code' keyword")
+                
+            except Exception as e:
+                logger.error(f"Error auto-sending server link: {e}")
+                await message.channel.send("Server code not available right now.")
+        
+        # Process commands normally
+        await self.process_commands(message)
+
     async def on_command_error(self, ctx, error):
         """Global error handler"""
         if isinstance(error, commands.CommandNotFound):

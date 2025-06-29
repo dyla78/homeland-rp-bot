@@ -114,6 +114,8 @@ The bot follows a modular architecture pattern with the following key design pri
 ```
 Changelog:
 - June 29, 2025. Initial setup
+- June 29, 2025. Added automatic server link sharing when "code" keyword is detected in messages
+- June 29, 2025. Updated with real Roblox server link and user owner ID configuration
 ```
 
 ## User Preferences
