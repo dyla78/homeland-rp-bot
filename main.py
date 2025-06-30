@@ -101,7 +101,7 @@ async def main():
         logger.error("DISCORD_BOT_TOKEN environment variable not found!")
         return
 
-    keep_alive()  # Activa servidor Flask (Replit o Render)
+ # keep_alive eliminado para Render
 
     bot = HomelandBot()
     try:
