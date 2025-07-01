@@ -5,7 +5,7 @@ app = Flask('')
 
 @app.route('/')
 def home():
-    return "✅ Homeland RP Bot activo"
+    return "Homeland RP Bot is alive!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
