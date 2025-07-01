@@ -355,3 +355,42 @@ async def setup_commands(bot):
                 logger.error(f"Error sending update status error message: {followup_error}")
     
     logger.info("All commands have been set up successfully")
+    import discord
+from discord import app_commands
+from discord.ext import commands
+
+class BasicCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @app_commands.command(name="status_server", description="Send server status with player count and event")
+    @app_commands.describe(players="Number of players", event="Current event", code="Join code")
+    async def status_server(self, interaction: discord.Interaction, players: int, event: str, code: str):
+        embed = discord.Embed(
+            title="🚧 Homeland RP 🚨",
+            description="Join us now and enjoy the roleplay!",
+            color=discord.Color.dark_blue()
+        )
+        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/3/36/Roblox_Studio_2022_Logo.png")  # Cambia esto al logo de tu server
+        embed.add_field(name="Players", value=str(players), inline=True)
+        embed.add_field(name="Event", value=event, inline=True)
+        embed.add_field(name="Code", value=f"`{code}`", inline=False)
+        embed.add_field(
+            name="\u200b",
+            value="**Your stay in our ingame server will make us happy**\n🌆 | Please remember to follow all rules and regulations!",
+            inline=False
+        )
+
+        view = discord.ui.View()
+        button = discord.ui.Button(
+            label="Join Now",
+            style=discord.ButtonStyle.link,
+            url=f"https://www.roblox.com/games/start?placeId=7711635737&launchData=joinCode%3D{code}"
+        )
+        view.add_item(button)
+
+        await interaction.response.send_message(embed=embed, view=view)
+
+async def setup(bot):
+    await bot.add_cog(BasicCommands(bot))
+
