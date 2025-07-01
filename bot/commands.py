@@ -355,9 +355,10 @@ async def setup_commands(bot):
                 logger.error(f"Error sending update status error message: {followup_error}")
     
     logger.info("All commands have been set up successfully")
-    import discord
+
 from discord import app_commands
 from discord.ext import commands
+import discord
 
 class BasicCommands(commands.Cog):
     def __init__(self, bot):
@@ -371,7 +372,7 @@ class BasicCommands(commands.Cog):
             description="Join us now and enjoy the roleplay!",
             color=discord.Color.dark_blue()
         )
-        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/3/36/Roblox_Studio_2022_Logo.png")  # Cambia esto al logo de tu server
+        embed.set_thumbnail(url="https://i.ibb.co/FndmtVx/logo.png")  # Cambia a tu logo si quieres
         embed.add_field(name="Players", value=str(players), inline=True)
         embed.add_field(name="Event", value=event, inline=True)
         embed.add_field(name="Code", value=f"`{code}`", inline=False)
@@ -393,4 +394,3 @@ class BasicCommands(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(BasicCommands(bot))
-
