@@ -101,8 +101,15 @@ async def main():
         logger.error("DISCORD_BOT_TOKEN environment variable not found!")
         return
 
-    keep_alive()  # ✅ Esto mantiene vivo el bot en Render
+        keep_alive()  # ✅ Esto mantiene vivo el bot en Render
 
     bot = HomelandBot()
     try:
         await bot.start(token)
+    except KeyboardInterrupt:
+        logger.info("Bot shutdown requested by user")
+    except Exception as e:
+        logger.error(f"Bot encountered an error: {e}")
+    finally:
+        await bot.close()
+
