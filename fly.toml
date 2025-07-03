@@ -1,0 +1,19 @@
+app = "homeland-rp-bot"  # Puedes cambiar el nombre si ya tienes otro
+
+primary_region = "iad"  # Cambia si quieres otra región
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PYTHONUNBUFFERED = "1"
+
+[processes]
+  app = "python main.py"
+
+# Este bloque evita que intente exponer un puerto
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  auto_start = false
+  auto_stop = false
