@@ -11,8 +11,8 @@ primary_region = "iad"  # Puedes cambiar la región
 [processes]
   app = "python main.py"
 
-[[services]]
-  internal_port = 8080
-  protocol = "tcp"
-  auto_start = false
-  auto_stop = false
+[deploy]
+  strategy = "immediate"
+
+[processes]
+  app = "python main.py"
