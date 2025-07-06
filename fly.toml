@@ -13,6 +13,3 @@ primary_region = "iad"  # Puedes cambiar la región
 
 [deploy]
   strategy = "immediate"
-
-[processes]
-  app = "python main.py"
