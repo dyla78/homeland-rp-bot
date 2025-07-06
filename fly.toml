@@ -1,15 +1,12 @@
-app = "homeland-rp-bot"  # Cambia si ya tienes otro
+app = "homeland-rp-bot"
 
-primary_region = "iad"  # Puedes cambiar la región
+primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
-  PYTHONUNBUFFERED = "1"  # Esta sí puede quedarse
-
-[processes]
-  app = "python main.py"
+  PYTHONUNBUFFERED = "1"
 
 [deploy]
   strategy = "immediate"
