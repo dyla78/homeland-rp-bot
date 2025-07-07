@@ -13,3 +13,6 @@ primary_region = "iad"
 
 [processes]
   app = "python main.py"
+  
+[experimental]
+  auto_rollback = true
